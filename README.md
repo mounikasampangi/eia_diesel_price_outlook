@@ -1,36 +1,35 @@
-# Q3 EIA Diesel Outlook
+# ⛽ Diesel Price Outlook — automated freight-fuel reporting
 
-Live chart of weekly U.S. retail diesel prices (EIA actuals) with monthly
-STEO forecast overlay, plus a regional PADD breakdown. Part of the Fresh
-Freight Q3 2026 Reefer & Perishable Forecast.
+> A self-updating chart of weekly U.S. retail diesel prices (EIA actuals) with a Short-Term Energy Outlook forecast overlay and a regional PADD breakdown — rebuilt and republished automatically every week so a freight team always has a current view of its single biggest variable cost.
 
-**Live URL:** https://[your-username].github.io/q3-eia-diesel-outlook/
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white)
+![Chart.js](https://img.shields.io/badge/Chart.js-FF6384?style=flat-square&logo=chartdotjs&logoColor=white)
+![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 
-## How it works
+**▶️ Live chart:** https://mounikasampangi.github.io/eia_diesel_price_outlook/ &nbsp;·&nbsp; updates weekly, no manual refresh
 
-- `docs/index.html` is the chart. It calls two EIA v2 endpoints from the
-  browser (weekly retail diesel + STEO forecast).
-- The EIA API key lives in GitHub Secrets as `EIA_API_KEY`. The committed
-  HTML has a placeholder string `__EIA_API_KEY__` instead of the real key.
-- On every push to main, on a weekly schedule (Wed 18:00 UTC), and on manual
-  trigger, the GitHub Action runs `scripts/inject_key.py` to swap the
-  placeholder for the real key, then deploys the result to GitHub Pages.
+<!-- 📸 To add a preview image: open the live page above, screenshot it, save as reports/figures/preview.png, and uncomment the next line -->
+<!-- ![Diesel price outlook](reports/figures/preview.png) -->
 
-## Local preview
+## 📊 The business question
+Diesel is the largest controllable cost in trucking, and fuel surcharges are priced off it. Teams need two things at a glance: *where are retail diesel prices now, and where does the near-term forecast say they're heading?* This dashboard keeps both current automatically.
 
-The placeholder version won't load real data. To preview locally, temporarily
-edit `docs/index.html` and paste your key in place of `__EIA_API_KEY__`.
-**Do not commit that change.** A fallback dataset is built into the HTML so
-the chart still renders without an API call.
+## 🧠 Approach & trade-offs
+The page calls two EIA v2 endpoints in the browser — weekly retail diesel actuals and the monthly Short-Term Energy Outlook (STEO) forecast — and overlays them, with a regional PADD breakdown underneath. The API key is stored as a **GitHub Actions secret** and injected at deploy time (the committed HTML carries only a `__EIA_API_KEY__` placeholder), so the key is never exposed in the repo. A GitHub Action redeploys on push and on a **weekly cron**, and because the chart fetches at page-load, fresh EIA data flows in with no code change. A small fallback dataset is embedded so the page still renders if the API is unreachable.
 
-## Data sources
+## 🔑 What it shows
+- Weekly retail diesel **actuals** trended against the **STEO forecast** — an at-a-glance read on direction and momentum.
+- A **regional (PADD) breakdown** of the most recent week, surfacing where fuel cost is running hot vs. cool across the country.
 
-- EIA weekly retail diesel: `petroleum/pri/gnd` (product EPD2D, process PTE)
-- EIA Short-Term Energy Outlook: `steo` (series DSRTUUS)
-- Regional breakdown by PADD: NUS, R10, R20, R30, R40, R50, SCA
+## ✅ Decision this supports
+Set and defend fuel surcharges, and build lane cost forecasts, off a live, trusted price signal instead of a stale monthly spreadsheet.
 
-## Updating the chart
+## 🛠️ Stack
+Python (key injection) · Chart.js · EIA v2 API · GitHub Actions · GitHub Pages
 
-Push changes to `docs/index.html` on main. The Action redeploys automatically.
-The weekly cron picks up fresh EIA data without any code change, since the
-chart fetches at page load time.
+## ▶️ Run / preview locally
+The placeholder build won't hit the live API. To preview, temporarily paste your EIA key in place of `__EIA_API_KEY__` in `docs/index.html` (**don't commit it**); the embedded fallback dataset also renders without a call.
+
+## 📂 Data & license
+Source: **U.S. Energy Information Administration (EIA)** — weekly retail diesel (`petroleum/pri/gnd`) and Short-Term Energy Outlook (`steo`), both public. Code released under the [MIT License](LICENSE).
